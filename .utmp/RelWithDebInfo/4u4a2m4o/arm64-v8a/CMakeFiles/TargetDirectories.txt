@@ -1,0 +1,8 @@
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/CMakeFiles/edit_cache.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/CMakeFiles/rebuild_cache.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/GameActivity/CMakeFiles/game.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/FramePacing/CMakeFiles/swappywrapper.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/FramePacing/CMakeFiles/edit_cache.dir
+E:/unityProjects/PMDM05V2/.utmp/RelWithDebInfo/4u4a2m4o/arm64-v8a/FramePacing/CMakeFiles/rebuild_cache.dir
