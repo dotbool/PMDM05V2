@@ -13,7 +13,6 @@ public class IdleState : IState
     {
         player.Animator.SetBool("IsIdle", true);
         player.Animator.SetBool("IsGrounded", true);
-        Debug.Log(player.Animator.GetAnimatorTransitionInfo(0));
 
     }
 

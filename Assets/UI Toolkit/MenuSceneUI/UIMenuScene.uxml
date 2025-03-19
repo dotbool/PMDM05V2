@@ -1,0 +1,19 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/MenuSceneUI/MenuScene.uss?fileID=7433441132597879392&amp;guid=10157601ed02b1a46b964fa2b63a1951&amp;type=3#MenuScene" />
+    <engine:VisualElement name="UIWindow" style="flex-grow: 1; align-self: center; justify-content: center; align-items: center; align-content: stretch; width: 1926px; flex-direction: column; background-image: resource(&apos;Images/backImage&apos;);">
+        <engine:VisualElement name="ToggleContainer" enabled="true" class="ToggleContainer" style="transition-duration: 0.3s, 0.5s; transition-property: opacity, translate; width: 575px; align-items: stretch; justify-content: flex-start; flex-grow: 0; align-self: center; align-content: flex-start;">
+            <engine:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-between;">
+                <engine:Label text="Settings:" name="LabelMenuSettings" style="-unity-font-definition: resource(&apos;Fonts/Frijole-Regular&apos;); font-size: 72px; color: rgb(245, 186, 0); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(17, 17, 17);" />
+                <engine:Button text="x" name="ButtonX" style="background-color: rgba(188, 188, 188, 0); font-size: 48px; color: rgb(253, 253, 253); -unity-font-style: bold; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;" />
+            </engine:VisualElement>
+            <engine:Toggle name="ToggleMusic" enabled="true" focusable="false" text="Music" class="toggle" />
+            <engine:Toggle name="ToggleSfx" focusable="false" text="Sfx" class="toggle" />
+        </engine:VisualElement>
+        <engine:VisualElement name="UIContainer" enabled="true" class="UIContainer" style="flex-grow: 0; align-items: stretch; justify-content: center; align-self: center; align-content: flex-start; height: 229px; width: 446px; display: flex; text-overflow: clip;">
+            <engine:Label text="El Juego" name="LabelTitle" style="translate: 0 0; -unity-font-definition: resource(&apos;Fonts/Frijole-Regular SDF&apos;); font-size: 128px; -unity-text-align: upper-center; color: rgb(250, 202, 1); -unity-text-outline-width: 2px; -unity-text-outline-color: rgb(0, 0, 0); text-overflow: ellipsis; white-space: nowrap;" />
+            <engine:Button text="Play" name="ButtonPlay" class="btn" style="transition-delay: 0.6s; background-color: rgb(80, 155, 221);" />
+            <engine:Button text="Settings" name="ButtonSettings" class="btn" style="transition-delay: 0.3s; background-color: rgb(245, 101, 1);" />
+            <engine:Button text="Exit" name="ButtonExit" class="btn" style="background-color: rgb(255, 195, 0);" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

@@ -34,8 +34,11 @@ public class RunningState : IState
             player.PlaySound(soundClick);
             timeClip = soundClick.length;
         }
-
-        if (!player.IsPushRight && !player.IsPushLeft && player.IsGrounded)
+        if (player.IsHurt)
+        {
+            player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.hurtState);
+        }
+        else if (!player.IsPushRight && !player.IsPushLeft && player.IsGrounded)
         {
             player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.idleState);
         }

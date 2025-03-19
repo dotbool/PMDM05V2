@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,6 +10,10 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rigidbody2d;
     private Vector2 move;
     private float speed;
+
+    float timeToJump;
+    float jumpCoolDown = .3f;
+    bool canJump;
 
     [SerializeField] private Move leftMove;
     [SerializeField] private Move rightMove;
@@ -45,7 +50,6 @@ public class PlayerController : MonoBehaviour
     public bool IsFalling { get; set; }
     public bool IsJumping { get; set; }
     public float LastInAirY { get; set; }
-    public bool IsAscending { get; set; }
 
 
 
@@ -62,8 +66,9 @@ public class PlayerController : MonoBehaviour
 
 
     //-----------------------HEALTH-----------------------------------------
-    public int MaxHealth { get; set; } = 3000;
-    public int CurrentHealth { get; set; } = 3000;
+    public int MaxHealth { get; set; } = 3;
+    public int CurrentHealth { get; set; } = 3;
+    public bool IsHurt { get; set; }
 
     //Cooldown para cuando es herido
     public float timeInvincible = 2.0f;
@@ -82,9 +87,12 @@ public class PlayerController : MonoBehaviour
     //----------------------------AUDIO------------------------------------------
 
     private AudioSource audioSource;
-    public AudioClip audioClipJump;
-    public AudioClip audioClipRun;
-    public AudioClip audioClipHurt;
+
+
+
+    //----------------------- COLLECTIBLES ---------------------------------------
+    public event Action<int> CoinCollected;
+    public int Coins { get; set; }
 
 
     private void Awake()
@@ -103,9 +111,16 @@ public class PlayerController : MonoBehaviour
         //{
         //    jumpMove.MoveHappened += OnJumpMoveHappened;
         //}
-
+        audioSource = GetComponent<AudioSource>();
         playerStateMachine = new PlayerStateMachine(this);
+        GameManager.Instance.Player = this;
+        GameManager.Instance.GameStateChanged += OnGameStateChanged;
 
+    }
+
+    private void OnGameStateChanged(GameState state)
+    {
+        MoveAction.Disable();
     }
 
     /// <summary>
@@ -144,7 +159,8 @@ public class PlayerController : MonoBehaviour
         MoveAction.Enable();
 
         //AUDIO
-        audioSource = GetComponent<AudioSource>();
+        audioSource.enabled = GameManager.Instance.settings.IsSfxOn;
+
 
     }
 
@@ -226,8 +242,6 @@ public class PlayerController : MonoBehaviour
 
     /// <summary>
     /// Averiguamos si el player está en tierra o en el aire
-    /// Cómo puede intervenir el botón de saltar, ejecutamos este
-    /// método en cada update, en el state
     /// </summary>
     public void CalcularSalto()
     {
@@ -264,9 +278,7 @@ public class PlayerController : MonoBehaviour
             //Debug.DrawRay(rigidbody2d.position, Vector2.down * .4f, Color.red);
         }
     }
-    float timeToJump;
-    float jumpCoolDown = .3f;
-    bool canJump;
+  
 
     private void Jump()
     {
@@ -276,34 +288,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    ///// <summary>
-    ///// Determinamos aquí si el player está sobre una colina
-    ///// Este método no depende de pulsaciones de teclas (es running). Sólo
-    ///// cambia el valor de Move que es físico, por lo que será ejecutado en
-    ///// Fixedupdate
-    ///// </summary>
-    //void CalcularClimbing()
-    //{
-    //    RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position, Vector2.down, .5f, LayerMask.GetMask("Hill"));
-
-    //    if (hit.collider != null)
-    //    {
-        
-    //        Debug.DrawRay(rigidbody2d.position, Vector2.down * .4f, Color.blue);
-
-    //        if (isPushRight || isPushLeft)
-    //        {
-    //            Move *= 2.2f;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.DrawRay(rigidbody2d.position, Vector2.down * .4f, Color.yellow);
-
-    //    }
-    //}
-
-
+   
     public void ChangeHealth(int amount)
     {
 
@@ -315,12 +300,32 @@ public class PlayerController : MonoBehaviour
             }
             isInvincible = true;
             damageCooldown = timeInvincible;
+            IsHurt = true;
+            StartCoroutine(IsBeingHurt());
         }
         CurrentHealth = Mathf.Clamp(CurrentHealth + amount, 0, MaxHealth);
+        
 
-        //avisamos a la UI de que el Health ha cambiado
+        //avisamos a los suscriptores, que ahora mismo son la barra del health y el game manager
         HealthChange?.Invoke();
 
+    }
+
+    /// <summary>
+    /// Corutina para cuando el player ha sido herido
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator IsBeingHurt()
+    {
+        while (IsHurt)
+        {
+            speed = 0; //inmovilizamos al player 
+            gameObject.layer = 9; //y lo sacamos de la layer por defecto para que no sea dañado de nuevo
+            yield return new WaitForSeconds(1.0f); 
+            gameObject.layer = 0;
+            IsHurt = false;
+            speed = 3.0f;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -328,18 +333,26 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("WaterSensor"))
         {
             ChangeHealth(-3);
-            Destroy(gameObject);
-
+        }
+        else if (other.gameObject.CompareTag("CollectibleCoin")){
+            Coins += 1;
+            CoinCollected?.Invoke(Coins); //Avisamos a los observers de que se cogió coin y enviámos el total
         }
     }
 
     public void PlaySound(AudioClip clip)
     {
-        audioSource.PlayOneShot(clip);
+        if (audioSource.enabled)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
     public void StopSound()
     {
-        audioSource.Stop();
+        if (audioSource.enabled)
+        {
+            audioSource.Stop();
+        }
     }
 
 

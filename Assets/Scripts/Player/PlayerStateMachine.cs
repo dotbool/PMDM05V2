@@ -8,6 +8,7 @@ public class PlayerStateMachine
     public RunningState runningState;
     public JumpingState jumpingState;
     public FallingState fallingState;
+    public HurtState hurtState;
 
     public event Action<IState> StateChanged;
 
@@ -17,6 +18,7 @@ public class PlayerStateMachine
         runningState = new RunningState(player);
         jumpingState = new JumpingState(player);
         fallingState = new FallingState(player);
+        hurtState = new HurtState(player);
     }
 
     public void Initialize(IState state)

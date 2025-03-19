@@ -19,7 +19,6 @@ public class SlimerController : MonoBehaviour
 
     //AUDIO
     public AudioClip deathClip;
-    //public AudioClip roarClip;
     AudioSource audioSource;
 
 
@@ -35,6 +34,8 @@ public class SlimerController : MonoBehaviour
     {
         //Audio
         audioSource = GetComponent<AudioSource>();
+        audioSource.enabled = GameManager.Instance.settings.IsSfxOn;
+
     }
 
 
@@ -106,9 +107,11 @@ public class SlimerController : MonoBehaviour
     /// <returns></returns>
     IEnumerator IsDead()
     {
+        audioSource.Stop();
         animator.SetBool("IsDead", isDead);
         audioSource.PlayOneShot(deathClip);
-        yield return new WaitForSeconds(.50f);
+        gameObject.layer = 9;
+        yield return new WaitForSeconds(deathClip.length);
         Destroy(gameObject);
     }
 

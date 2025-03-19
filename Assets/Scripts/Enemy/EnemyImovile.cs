@@ -2,6 +2,20 @@ using UnityEngine;
 
 public class EnemyImovile : MonoBehaviour
 {
+
+    AudioSource audioSource;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
+        audioSource.enabled = GameManager.Instance.settings.IsSfxOn;
+
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         PlayerController player = collision.collider.GetComponent<PlayerController>();
@@ -12,14 +26,4 @@ public class EnemyImovile : MonoBehaviour
 
         }
     }
-    //void OnTriggerStay2D(Collider2D other)
-    //{
-    //    PlayerController controller = other.GetComponent<PlayerController>();
-
-
-    //    if (controller != null)
-    //    {
-    //        controller.ChangeHealth(-1);
-    //    }
-    //}
 }

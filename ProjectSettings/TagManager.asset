@@ -8,6 +8,7 @@ TagManager:
   - VerticalSensor
   - Ground
   - Hill
+  - CollectibleCoin
   layers:
   - Default
   - TransparentFX

@@ -1,9 +1,0 @@
-<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/HeatthBarUI/GameUIStyle.uss?fileID=7433441132597879392&amp;guid=563871a4dc0f6044b954135139b3f9e7&amp;type=3#GameUIStyle" />
-    <engine:VisualElement name="HealthBarBackground" class="heatlhbar-size" style="flex-grow: 1; position: absolute; height: 150px; background-image: url(&quot;project://database/Assets/HeatthBarUI/HealthbarBackground.png?fileID=2800000&amp;guid=b466b5bdf014f2843b4554500954f355&amp;type=3#HealthbarBackground&quot;);">
-        <engine:VisualElement name="HealthBarMask" style="flex-grow: 1; position: absolute; width: 100%; height: 100%; overflow: hidden; transition-property: width; transition-duration: 0.5s; transition-timing-function: ease-out-bounce;">
-            <engine:VisualElement name="HealthBarFill" class="healthbar-size" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/HeatthBarUI/HealthBarFill.png?fileID=2800000&amp;guid=a9d0aca3d7edb1b469a62c433e8c8808&amp;type=3#HealthBarFill&quot;); position: absolute; height: 100%; overflow: visible; opacity: 1; width: 500px;" />
-        </engine:VisualElement>
-        <engine:Label text="Label" name="HealthLabel" style="position: absolute; width: 100%; height: 100%; font-size: 28px; color: rgb(255, 197, 0); -unity-text-align: middle-left; -unity-font-definition: url(&quot;project://database/Assets/TextMesh%20Pro/Examples%20&amp;%20Extras/Fonts/Bangers.ttf?fileID=12800000&amp;guid=5dd49b3eacc540408c98eee0de38e0f1&amp;type=3#Bangers&quot;); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-left: 50px; padding-top: 0; padding-right: 0; padding-bottom: 0;" />
-    </engine:VisualElement>
-</engine:UXML>
