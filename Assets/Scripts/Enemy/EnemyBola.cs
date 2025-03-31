@@ -17,7 +17,6 @@ public class EnemyBola : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Colisionando");
         PlayerController player = collision.collider.GetComponent<PlayerController>();
         if (player != null)
         {

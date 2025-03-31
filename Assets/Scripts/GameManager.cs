@@ -3,19 +3,25 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 
 public enum GameState { Lose, Menu, Play, Win }
 
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance; //Queremos mantener los valores de las variables, por lo que la hacemos static
 
-    public static GameManager Instance; //Queremos mantener los valores de las variables, por lo que hacemos la variable static
-    BackGroundMusicController BackGroundMusicController;
-
-    public Settings settings = new Settings();
+    public Settings settings = new(); //esta clase sostiene los valores del sonido
 
     private PlayerController player;
+
+    //El player está en la Main Scene por lo que sólo
+    //obtendremos una referencia a ese gameObject  cuando 
+    //sea construido. Es por ello que la dependencia vendrá
+    //vía setter. Una vez exista dependencia le añadimos
+    //los listeners para saber cuando coge moneda o cuando
+    //cambia el health
     public PlayerController Player
     {
         get { return player; }
@@ -29,6 +35,7 @@ public class GameManager : MonoBehaviour
 
     private UIMenuSceneController uIMenuSceneController;
 
+    
     public UIMenuSceneController UIMenuSceneController
     {
         get { return uIMenuSceneController; }
@@ -39,14 +46,15 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private readonly int coinsToWin = 4;
+    private readonly int coinsToWin = 50;
     private int coinsCollected;
-    private readonly int livesToLose = 0;
-    private int currentLives;
+    //private readonly int livesToLose = 0;
+    //private int currentLives;
     private GameState gameState;
 
     public event Action<GameState> GameStateChanged;
     public event Action<bool> MusicChanged;
+    public event Action<bool> SfxChanged;
 
 
     /// <summary>
@@ -74,11 +82,15 @@ public class GameManager : MonoBehaviour
         Screen.orientation = ScreenOrientation.LandscapeLeft;
     }
 
+    /// <summary>
+    /// Liberamos memoria
+    /// </summary>
     private void OnDestroy()
     {
         if (player != null)
         {
             player.CoinCollected -= OnCoinCollected;
+            player.HealthChange -= OnHealthChange;
         }
         if (uIMenuSceneController != null)
         {
@@ -87,6 +99,12 @@ public class GameManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Este método recibe el nombre del botón de la UI del menú
+    /// Si es un toggle  de los del sonido, se avisa a los suscriptores
+    /// </summary>
+    /// <param name="buttonName"></param>
+    /// <returns></returns>
     private Settings OnUIMenuButtonClicked(ButtonsNames buttonName)
     {
 
@@ -99,6 +117,7 @@ public class GameManager : MonoBehaviour
 
             case ButtonsNames.Sfx:
                 settings.IsSfxOn = !settings.IsSfxOn;
+                SfxChanged.Invoke(settings.IsSfxOn);
                 break;
 
             case ButtonsNames.Exit:
@@ -135,11 +154,6 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void Win()
-    {
-
-    }
-
    
     public void Exit()
     {
@@ -151,6 +165,9 @@ public class GameManager : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// Salva en Player prefs
+    /// </summary>
     void SaveData()
     {
         PlayerPrefs.SetInt("music", settings.IsMusicOn ? 1 : 0);
@@ -163,6 +180,10 @@ public class GameManager : MonoBehaviour
         settings.IsSfxOn = PlayerPrefs.GetInt("sound", 1) > 0;
     }
 
+    /// <summary>
+    /// El listener que se le asigna al player para saber cuando coge monedas
+    /// </summary>
+    /// <param name="coins"></param>
     private void OnCoinCollected(int coins)
     {
         if(coins == coinsToWin)
@@ -178,6 +199,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Cómo el juego acaba se gane o se pierda,
+    /// siempre lo reseteamos si hay un cambio de estado
+    /// </summary>
+    /// <param name="newState"></param>
     private void UpdateGameState(GameState newState)
     {
         gameState = newState;
@@ -198,7 +224,7 @@ public class GameManager : MonoBehaviour
 
         }
         coinsCollected = 0;
-        if(uIMenuSceneController!= null)
+        if(uIMenuSceneController != null)
         {
             uIMenuSceneController.ButtonClicked -= OnUIMenuButtonClicked;
         }

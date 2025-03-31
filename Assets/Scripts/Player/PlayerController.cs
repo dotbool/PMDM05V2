@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using System.Threading;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,9 +13,15 @@ public class PlayerController : MonoBehaviour
     float jumpCoolDown = .3f;
     bool canJump;
 
+ 
+
     [SerializeField] private Move leftMove;
     [SerializeField] private Move rightMove;
     [SerializeField] private Move jumpMove;
+
+    //public InputAction MoveAction;
+
+    //-----------------------------------------------------------------
 
     private bool isIdle;
     private bool isPushLeft;
@@ -53,9 +57,9 @@ public class PlayerController : MonoBehaviour
 
 
 
-
-    private PlayerStateMachine playerStateMachine;
+    public PlayerStateMachine playerStateMachine;
     public PlayerStateMachine PlayerStateMachine => playerStateMachine;
+
 
 
     //---------------------ANIMACIONES--------------------------------------
@@ -76,12 +80,8 @@ public class PlayerController : MonoBehaviour
     float damageCooldown;
 
 
-    //Avisa a la UI de cambios en el health
+    //Avisa de cambios en el health
     public event Action HealthChange;
-
-    //--------------------------------------------------------------------------
-    public InputAction MoveAction;
-
 
 
     //----------------------------AUDIO------------------------------------------
@@ -94,23 +94,25 @@ public class PlayerController : MonoBehaviour
     public event Action<int> CoinCollected;
     public int Coins { get; set; }
 
+    private bool gameOver;
+
 
     private void Awake()
     {
         //Move. Asignamos los callBacks para cuando los botones
         //sean pulsados. Establecen las variables isMoving y Jump
-        //if (leftMove != null)
-        //{
-        //    leftMove.MoveHappened += OnLeftMoveHappened;
-        //}
-        //if (rightMove != null)
-        //{
-        //    rightMove.MoveHappened += OnRightMoveHappened;
-        //}
-        //if (jumpMove != null)
-        //{
-        //    jumpMove.MoveHappened += OnJumpMoveHappened;
-        //}
+        if (leftMove != null)
+        {
+            leftMove.MoveHappened += OnLeftMoveHappened;
+        }
+        if (rightMove != null)
+        {
+            rightMove.MoveHappened += OnRightMoveHappened;
+        }
+        if (jumpMove != null)
+        {
+            jumpMove.MoveHappened += OnJumpMoveHappened;
+        }
         audioSource = GetComponent<AudioSource>();
         playerStateMachine = new PlayerStateMachine(this);
         GameManager.Instance.Player = this;
@@ -120,7 +122,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnGameStateChanged(GameState state)
     {
-        MoveAction.Disable();
+        //MoveAction.Disable();
+        gameOver = true;
+
     }
 
     /// <summary>
@@ -156,54 +160,66 @@ public class PlayerController : MonoBehaviour
 
 
         playerStateMachine.Initialize(playerStateMachine.idleState);
-        MoveAction.Enable();
+        //MoveAction.Enable();
 
         //AUDIO
         audioSource.enabled = GameManager.Instance.settings.IsSfxOn;
-
-
     }
 
 
-    // Update is called once per frame
     /// <summary>
     /// Averiguamos que teclas están siendo pulsadas y determinamos
     /// el estado del player en cada frame
     /// </summary>
     void Update()
     {
-        Move = MoveAction.ReadValue<Vector2>();
-        isPushLeft = Move.x < 0;
-        isPushRight = Move.x > 0;
-        IsPushJump = Move.y > 0;
-
+        //Move = MoveAction.ReadValue<Vector2>();
+        //isPushLeft = Move.x < 0;
+        //isPushRight = Move.x > 0;
+        //IsPushJump = Move.y > 0;
         if (IsPushRight)
         {
             IsFacingRight = true;
+            move = Vector2.right;
         }
-        if (IsPushLeft)
+        else if (IsPushLeft)
         {
             IsFacingRight = false;
+            move = Vector2.left;
+        }
+        else
+        {
+            move = Vector2.zero;
         }
 
         if (isInvincible)
         {
             damageCooldown -= Time.deltaTime;
-            if (damageCooldown < 0)
-            {
-                isInvincible = false;
-            }
+            isInvincible = damageCooldown > 0;
+            //if (damageCooldown < 0)
+            //{
+            //    isInvincible = false;
+            //}
         }
 
         if (!canJump)
         {
             timeToJump -= Time.deltaTime;
-            if (timeToJump <= 0)
-            {
-                canJump = true;
-            }
+            canJump = timeToJump <= 0;
+            //if (timeToJump <= 0)
+            //{
+            //    canJump = true;
+            //}
+        }
+        if (gameOver)
+        {
+            StopMoving();
         }
         playerStateMachine.Execute();
+        //if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+        //{
+        //    Debug.Log("SEPULS EL BOTON");
+        //}
 
     }
 
@@ -215,27 +231,24 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-        //CalcularClimbing();
         CalcularSalto();
         DoMove();
     }
     void DoMove()
     {
-
-        //Climbing no es un estado en sí sino una variante de running. Cómo sólo
-        //cambia el Move lo ejecutamos en fixedupdate
+    
         Vector2 position;
         if (canJump && IsPushJump && IsGrounded)
         {
             Jump();
-            position = (Vector2)rigidbody2d.position + speed * Time.deltaTime * Move;
+            position = (Vector2)rigidbody2d.position + speed * Time.deltaTime * move;
 
         }
         else
         {
-            position = (Vector2)rigidbody2d.position + speed * Time.deltaTime * new Vector2(Move.x,0);
-
+            position = (Vector2)rigidbody2d.position + speed * Time.deltaTime * new Vector2(move.x, 0);
         }
+      
         rigidbody2d.position = position;
         spriteRenderer.flipX = !IsFacingRight;
     }
@@ -246,20 +259,18 @@ public class PlayerController : MonoBehaviour
     public void CalcularSalto()
     {
         RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position, Vector2.down, .5f, LayerMask.GetMask("Ground"));
-        //RaycastHit2D hitHill = Physics2D.Raycast(rigidbody2d.position, Vector2.down, .5f, LayerMask.GetMask("Hill"));
 
         IsGrounded = hit.collider != null;
         if (IsGrounded)
         {
-            Debug.DrawRay(rigidbody2d.position, Vector2.down * .5f, Color.green);
+            float angleup = Vector2.Angle(Vector2.up, hit.normal);
 
-            if (hit.collider.gameObject.CompareTag("Hill"))
+            if (angleup >= 44f && angleup <= 46f)
             {
                 if (isPushRight || isPushLeft)
                 {
-                    Move *= 2.2f;
+                    Move *= 2.3f;
                 }
-            
             }
             else
             {
@@ -268,17 +279,16 @@ public class PlayerController : MonoBehaviour
             IsFalling = false;
             IsJumping = false;
         }
-      
+
         else
         {
             IsJumping = LastInAirY < rigidbody2d.position.y;
             IsFalling = LastInAirY > rigidbody2d.position.y;
             LastInAirY = rigidbody2d.position.y;
 
-            //Debug.DrawRay(rigidbody2d.position, Vector2.down * .4f, Color.red);
         }
     }
-  
+
 
     private void Jump()
     {
@@ -320,7 +330,7 @@ public class PlayerController : MonoBehaviour
         while (IsHurt)
         {
             speed = 0; //inmovilizamos al player 
-            gameObject.layer = 9; //y lo sacamos de la layer por defecto para que no sea dañado de nuevo
+            gameObject.layer = 9; //y lo sacamos de la layer por defecto para que no sea dañado de nuevobir 
             yield return new WaitForSeconds(1.0f); 
             gameObject.layer = 0;
             IsHurt = false;
@@ -355,6 +365,41 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (leftMove != null)
+        {
+            leftMove.MoveHappened -= OnLeftMoveHappened;
+        }
+        if (rightMove != null)
+        {
+            rightMove.MoveHappened -= OnRightMoveHappened;
+        }
+        if (jumpMove != null)
+        {
+            jumpMove.MoveHappened -= OnJumpMoveHappened;
+        }
+    }
 
+    void StopMoving()
+    {
+        gameObject.layer = 9;
 
+        if (leftMove != null)
+        {
+            leftMove.MoveHappened -= OnLeftMoveHappened;
+        }
+        if (rightMove != null)
+        {
+            rightMove.MoveHappened -= OnRightMoveHappened;
+        }
+        if (jumpMove != null)
+        {
+            jumpMove.MoveHappened -= OnJumpMoveHappened;
+        }
+        IsPushLeft = false;
+        IsPushRight = false;
+        IsPushJump = false;
+
+    }
 }

@@ -26,6 +26,11 @@ public class BackGroundMusicController : MonoBehaviour
         music.enabled = isMusicOn;
     }
 
+    /// <summary>
+    /// En Start el audio del background estará activo en función de la 
+    /// propiedad IsMusicOn del game manager. Y será habilitado o inhabilitado
+    /// si la propiedad cambia
+    /// </summary>
     void Start()
     {
         music.enabled = GameManager.Instance.settings.IsMusicOn;

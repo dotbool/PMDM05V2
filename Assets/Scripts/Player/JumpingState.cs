@@ -3,19 +3,19 @@ using UnityEngine;
 public class JumpingState : IState
 {
     private PlayerController player;
-    AudioClip soundClick;
+    AudioClip soundClip;
 
     public JumpingState(PlayerController player)
     {
         this.player = player;
-        soundClick = Resources.Load<AudioClip>("Sounds/jump-clip");
+        soundClip = Resources.Load<AudioClip>("Sounds/jump-clip");
 
     }
     public void Enter()
     {
         player.Animator.SetBool("IsJumping", true);
         player.Animator.SetBool("IsGrounded", false);
-        player.PlaySound(soundClick);
+        player.PlaySound(soundClip);
 
     }
 
@@ -29,18 +29,22 @@ public class JumpingState : IState
     //por lo que hago la transición inmediatamente
     public void Tick()
     {
-
-        if (!player.IsPushRight && !player.IsPushLeft && player.IsGrounded)
+        if (player.IsHurt)
+        {
+            player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.hurtState);
+        }
+        else if ((!player.IsPushRight || !player.IsPushLeft) && player.IsGrounded)
         {
             player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.idleState);
+        }
+        else if ((player.IsPushLeft || player.IsPushRight ) && player.IsGrounded)
+        {
+            player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.runningState);
         }
         else if (player.IsFalling)
         {
             player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.fallingState);
         }
-        //player.IsJumping = false;
-        //player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.ascendingState);
-
 
     }
 }

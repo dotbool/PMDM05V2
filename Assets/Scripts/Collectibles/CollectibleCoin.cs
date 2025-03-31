@@ -20,11 +20,11 @@ public class CollectibleCoin : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.name == "Player"){
-            StartCoroutine(Collected());
+            StartCoroutine(IsCollected());
         }
     }
 
-    IEnumerator Collected()
+    IEnumerator IsCollected()
     {
         gameObject.layer = 9;
         textPoint.gameObject.SetActive(true);

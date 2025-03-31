@@ -204,7 +204,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: bf8713443162e1f46966a1ca2e4f7fc9, type: 3}
   m_Resource: {fileID: 8300000, guid: bf8713443162e1f46966a1ca2e4f7fc9, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -218,7 +218,7 @@ AudioSource:
   rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
-  BypassReverbZones: 0
+  BypassReverbZones: 1
   rolloffCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -278,7 +278,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.707
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0

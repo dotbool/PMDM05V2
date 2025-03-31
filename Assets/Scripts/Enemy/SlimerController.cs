@@ -25,7 +25,6 @@ public class SlimerController : MonoBehaviour
     //ANIMATION
     Animator animator;
     private bool isDead;
-    private bool isResting;
     private bool isMoving;
     float timeToSwitch = 5.0f;
 
@@ -49,9 +48,6 @@ public class SlimerController : MonoBehaviour
         spriteRenderer.flipX = direction == 1;
         animator = GetComponent<Animator>();
         isMoving = true;
-        
-
-        //audioSource.enabled = GameManager.Instance.IsSoundEffectsOn;
 
     }
 
@@ -61,11 +57,12 @@ public class SlimerController : MonoBehaviour
         timeToSwitch -= Time.deltaTime;
         isMoving = timeToSwitch > 0;
         timeToSwitch = timeToSwitch < -5.0f ? 5.0f : timeToSwitch;
+        animator.SetBool("IsMoving", isMoving);
+
     }
 
     private void FixedUpdate()
     {
-        animator.SetBool("IsMoving", isMoving);
         if (isMoving)
         {
             Vector2 position = rigidbody2d.position;
@@ -82,7 +79,7 @@ public class SlimerController : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Player"))
         {
-
+            //Eliminamos al enemigo si el player está por encima
             if (rigidbody2d.position.y < other.attachedRigidbody.position.y )
             {
                 isDead = true;
@@ -107,13 +104,15 @@ public class SlimerController : MonoBehaviour
     /// <returns></returns>
     IEnumerator IsDead()
     {
-        audioSource.Stop();
         animator.SetBool("IsDead", isDead);
+        audioSource.volume = 1;
+        if (audioSource.enabled)
+        {
+            audioSource.PlayOneShot(deathClip);
+        }
         audioSource.PlayOneShot(deathClip);
         gameObject.layer = 9;
-        yield return new WaitForSeconds(deathClip.length);
+        yield return new WaitForSeconds(.5f);
         Destroy(gameObject);
     }
-
-
 }

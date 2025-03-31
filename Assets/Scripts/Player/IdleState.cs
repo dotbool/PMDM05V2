@@ -18,8 +18,12 @@ public class IdleState : IState
 
     public void Tick()
     {
+        if (player.IsHurt)
+        {
+            player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.hurtState);
+        }
 
-        if ((player.IsPushLeft  || player.IsPushRight)  && player.IsGrounded)
+        else if ((player.IsPushLeft  || player.IsPushRight)  && player.IsGrounded)
         {
             player.PlayerStateMachine.TransitionTo(player.PlayerStateMachine.runningState);
         }

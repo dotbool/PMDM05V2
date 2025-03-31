@@ -63,3 +63,36 @@
     translate: 1250px 0;
     flex-grow: 0;
 }
+
+.btn:hover {
+    background-color: rgba(255, 255, 255, 0.68);
+    scale: 1.1 1.1;
+}
+
+.button--blue {
+    background-color: rgb(0, 106, 226);
+}
+
+.button--orange {
+    background-color: rgb(245, 101, 1);
+}
+
+.button--yellow {
+    background-color: rgb(255, 195, 0);
+}
+
+.button--x {
+    background-color: rgba(188, 188, 188, 0);
+    font-size: 48px;
+    color: rgb(253, 253, 253);
+    -unity-font-style: bold;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.button--x:hover {
+    background-color: rgb(255, 163, 0);
+    color: rgb(0, 0, 0);
+}

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[Serializable]
 public class PlayerStateMachine
 {
     public IState CurrentState { get; private set; }
@@ -47,7 +48,6 @@ public class PlayerStateMachine
     {
         if (CurrentState != null)
         {
-            Debug.Log(CurrentState);
             CurrentState.Tick();
         }
     }
